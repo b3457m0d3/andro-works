@@ -101,4 +101,12 @@ public class ExifUtil {
         
         return orientation;
     }
+    
+    private static String(String file_path)
+    {
+        ExifInterface exif = new ExifInterface(file_path);
+        String date=exif.getAttribute(ExifInterface.TAG_DATETIME);
+        
+        return date;
+    }
 }
