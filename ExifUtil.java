@@ -1,3 +1,5 @@
+package com.example.shoutoutloud;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -7,41 +9,51 @@ import java.lang.reflect.Method;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Build;
+import android.widget.Toast;
 
 public class ExifUtil {
-
+	
+	public static final int ORIENTATION_NORMAL = 1;
+	public static final int ORIENTATION_FLIP_HORIZONTAL = 2;
+	public static final int ORIENTATION_ROTATE_180 = 3;
+	public static final int ORIENTATION_FLIP_VERTICAL = 4;
+	public static final int ORIENTATION_TRANSPOSE = 5;
+	public static final int ORIENTATION_ROTATE_90 = 6;
+	public static final int ORIENTATION_TRANSVERSE = 7;
+	public static final int ORIENTATION_ROTATE_270 = 8;
+    
     public static Bitmap rotateBitmap(String src, Bitmap bitmap) {
         try {
             int orientation = getExifOrientation(src);
             
-            if (orientation == 1) {
+            if (orientation == ORIENTATION_NORMAL) {
                 return bitmap;
             }
             
             Matrix matrix = new Matrix();
             switch (orientation) {
-            case 2:
+            case ORIENTATION_FLIP_HORIZONTAL:
                 matrix.setScale(-1, 1);
                 break;
-            case 3:
+            case ORIENTATION_ROTATE_180:
                 matrix.setRotate(180);
                 break;
-            case 4:
+            case ORIENTATION_FLIP_VERTICAL:
                 matrix.setRotate(180);
                 matrix.postScale(-1, 1);
                 break;
-            case 5:
+            case ORIENTATION_TRANSPOSE:
                 matrix.setRotate(90);
                 matrix.postScale(-1, 1);
                 break;
-            case 6:
+            case ORIENTATION_ROTATE_90:
                 matrix.setRotate(90);
                 break;
-            case 7:
+            case ORIENTATION_TRANSVERSE:
                 matrix.setRotate(-90);
                 matrix.postScale(-1, 1);
                 break;
-            case 8:
+            case ORIENTATION_ROTATE_270:
                 matrix.setRotate(-90);
                 break;
             default:
@@ -100,13 +112,5 @@ public class ExifUtil {
         }
         
         return orientation;
-    }
-    
-    private static String(String file_path)
-    {
-        ExifInterface exif = new ExifInterface(file_path);
-        String date=exif.getAttribute(ExifInterface.TAG_DATETIME);
-        
-        return date;
     }
 }
