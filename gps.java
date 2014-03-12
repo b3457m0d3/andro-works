@@ -1,3 +1,5 @@
+package com.example.shoutoutloud;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +22,9 @@ import android.util.Log;
 public class GPSTracker extends Service implements LocationListener {
  
     private final Context mContext;
+    
+    String city =null;
+    String country = null;
  
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -163,6 +168,103 @@ public class GPSTracker extends Service implements LocationListener {
             Log.e("LocationSampleActivity",
                     "IO Exception in getFromLocation()");
             e1.printStackTrace();
+            return ("null");
+            } catch (IllegalArgumentException e2) {
+            // Error message to post in the log
+            String errorString = "Illegal arguments " +
+                    Double.toString(location.getLatitude()) +
+                    " , " +
+                    Double.toString(location.getLongitude()) +
+                    " passed to address service";
+            Log.e("LocationSampleActivity", errorString);
+            e2.printStackTrace();
+            return errorString;
+            }
+        	
+        	// If the reverse geocode returned an address
+            if (addresses != null && addresses.size() > 0) {
+                // Get the first address
+                Address address = addresses.get(0);
+                /*
+                 * Format the first line of address (if available),
+                 * city, and country name.
+                 */
+                String addressText = String.format(
+                        "%s, %s, %s",
+                        // If there's a street address, add it
+                        address.getMaxAddressLineIndex() > 0 ?
+                                address.getAddressLine(0) : "",
+                        // Locality is usually a city
+                        address.getLocality(),
+                        // The country of the address
+                        address.getCountryName());
+                
+                        addressString = addressText;
+            } 
+        }
+         
+        // return longitude
+        return addressString;
+    }
+    
+    public String getCity(){
+        if(location != null){
+        	geocoder = new Geocoder(mContext, Locale.getDefault());
+            
+        	try {
+                /*
+                 * Return 1 address.
+                 */
+                addresses = geocoder.getFromLocation(location.getLatitude(),
+                        location.getLongitude(), 5);
+            } catch (IOException e1) {
+            Log.e("LocationSampleActivity",
+                    "IO Exception in getFromLocation()");
+            e1.printStackTrace();
+            return ("null");
+            } catch (IllegalArgumentException e2) {
+            // Error message to post in the log
+            String errorString = "Illegal arguments " +
+                    Double.toString(location.getLatitude()) +
+                    " , " +
+                    Double.toString(location.getLongitude()) +
+                    " passed to address service";
+            Log.e("LocationSampleActivity", errorString);
+            e2.printStackTrace();
+            return errorString;
+            }
+        	
+        	// If the reverse geocode returned an address
+            if (addresses != null && addresses.size() > 0) {
+                // Get the first address
+                Address address = addresses.get(0);
+                /*
+                 * Format the first line of address (if available),
+                 * city, and country name.
+                 */
+                         city= address.getLocality();
+                        
+            } 
+        }
+         
+        // return longitude
+        return city;
+    }
+    
+    public String getCountry(){
+        if(location != null){
+        	geocoder = new Geocoder(mContext, Locale.getDefault());
+            
+        	try {
+                /*
+                 * Return 1 address.
+                 */
+                addresses = geocoder.getFromLocation(location.getLatitude(),
+                        location.getLongitude(), 5);
+            } catch (IOException e1) {
+            Log.e("LocationSampleActivity",
+                    "IO Exception in getFromLocation()");
+            e1.printStackTrace();
             return ("IO Exception trying to get address");
             } catch (IllegalArgumentException e2) {
             // Error message to post in the log
@@ -179,27 +281,17 @@ public class GPSTracker extends Service implements LocationListener {
         	// If the reverse geocode returned an address
             if (addresses != null && addresses.size() > 0) {
                 // Get the first address
-                Address address = addresses.get(1);
+                Address address = addresses.get(0);
                 /*
                  * Format the first line of address (if available),
                  * city, and country name.
                  */
-                String addressText = String.format(
-                        "%s, %s, %s",
-                        // If there's a street address, add it
-                        address.getMaxAddressLineIndex() > 0 ?
-                                address.getAddressLine(0) : "",
-                        // Locality is usually a city
-                        address.getLocality(),
-                        // The country of the address
-                        address.getCountryName());
-                        
-                        addressString = addressText;
+                         country= address.getLocality();
             } 
         }
          
         // return longitude
-        return addressString;
+        return country;
     }
     /**
      * Function to check GPS/wifi enabled
