@@ -49,8 +49,8 @@ public class GPSTracker extends Service implements LocationListener {
     protected LocationManager locationManager;
     
     Geocoder geocoder;
-    String addressString = null;
-	List<Address> addresses = null;
+    private String addressString[] = new String[10];
+	private List <Address> addresses = null;
  
     public GPSTracker(Context context) {
         this.mContext = context;
@@ -154,7 +154,7 @@ public class GPSTracker extends Service implements LocationListener {
     /**
      * Function to get longitude
      * */
-    public String getAddress(){
+    public String[] getAddress(){
         if(location != null){
         	geocoder = new Geocoder(mContext, Locale.getDefault());
             
@@ -163,12 +163,12 @@ public class GPSTracker extends Service implements LocationListener {
                  * Return 1 address.
                  */
                 addresses = geocoder.getFromLocation(location.getLatitude(),
-                        location.getLongitude(), 5);
+                        location.getLongitude(), 10);
             } catch (IOException e1) {
             Log.e("LocationSampleActivity",
                     "IO Exception in getFromLocation()");
             e1.printStackTrace();
-            return ("null");
+            return (addressString = null);
             } catch (IllegalArgumentException e2) {
             // Error message to post in the log
             String errorString = "Illegal arguments " +
@@ -178,32 +178,39 @@ public class GPSTracker extends Service implements LocationListener {
                     " passed to address service";
             Log.e("LocationSampleActivity", errorString);
             e2.printStackTrace();
-            return errorString;
+              return (addressString = null);
             }
         	
         	// If the reverse geocode returned an address
             if (addresses != null && addresses.size() > 0) {
                 // Get the first address
-                Address address = addresses.get(0);
+            for(int i=0; i< addresses.size(); i++){
+                Address address = addresses.get(i);
                 /*
                  * Format the first line of address (if available),
                  * city, and country name.
                  */
-                String addressText = String.format(
+               if(address.getLocality() != null && address.getCountryName() != null && address.getAddressLine(0) != null)
+               { String addressText = String.format(
                         "%s, %s, %s",
                         // If there's a street address, add it
                         address.getMaxAddressLineIndex() > 0 ?
                                 address.getAddressLine(0) : "",
                         // Locality is usually a city
-                        address.getLocality(),
+                        address.getLocality() != null ? address.getLocality() : "",
                         // The country of the address
-                        address.getCountryName());
+                        address.getCountryName() != null ? address.getCountryName() : "");
                 
-                        addressString = addressText;
+                        addressString[i] = addressText;
+                        Log.d("ADDRESS", addressString[i]);
+                        //addressText = null;
+               }
+               else
+            	   continue;
+             }
             } 
         }
          
-        // return longitude
         return addressString;
     }
     
@@ -260,7 +267,7 @@ public class GPSTracker extends Service implements LocationListener {
                  * Return 1 address.
                  */
                 addresses = geocoder.getFromLocation(location.getLatitude(),
-                        location.getLongitude(), 5);
+                        location.getLongitude(), 10);
             } catch (IOException e1) {
             Log.e("LocationSampleActivity",
                     "IO Exception in getFromLocation()");
