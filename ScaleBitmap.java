@@ -1,4 +1,4 @@
-package com.example.shoutoutloud;
+package com.example.xxxxxxx;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
