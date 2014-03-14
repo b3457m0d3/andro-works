@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UploadFiles {
+public class ImageUpload {
 
     public void upload(String selectedPath) throws IOException {
 
