@@ -1,4 +1,4 @@
-package com.example.xxxxxx;
+package com.example.xxxx;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,7 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-@SuppressLint("NewApi")
+@SuppressLint({ "NewApi", "DefaultLocale" })
 public class ActionShout extends Activity {
 	
 	private File destImage1, destImage2, destImage3, destImage4, f1, f2, f3, f4;
@@ -518,7 +518,8 @@ public class ActionShout extends Activity {
 		
 		final Button shout  = (Button) findViewById(R.id.button1);
 		shout.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            @SuppressLint("DefaultLocale")
+			public void onClick(View v) {
             	news_update = editText1.getText().toString();
             	
             	
@@ -649,97 +650,6 @@ public class ActionShout extends Activity {
 		/* Operations on shout button click finished here */
 		
 	}
-    
-	private class AddInDatabase extends AsyncTask<String, String, String> {
-    	
-    	/**
-		 * Before starting background thread Show Progress Dialog
-		 * */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			pDialog = new ProgressDialog(ActionShout.this);
-			pDialog.setMessage("The News update is being shouted !");
-			pDialog.setIndeterminate(false);
-			pDialog.setCancelable(false);
-			pDialog.show();
-		}
-		
-		/**
-		 * Adding into database
-		 * */
-		protected String doInBackground(String... args) {
-			/* Adding into Database */
-            
-            /* Building Parameters */
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("NewsUpdate", news_update));
-			params.add(new BasicNameValuePair("Anonymous", anony));
-			params.add(new BasicNameValuePair("Latitude", latit));
-			params.add(new BasicNameValuePair("Longitude", longit));
-			params.add(new BasicNameValuePair("GeoLocation", finalAddress));
-			params.add(new BasicNameValuePair("EmailId", email_id));
-			
-			Log.d("DEBUG", "Building NameValuePair");
-			
-			/* Calling Json Object */
-		    JSONParser jsonParser = new JSONParser();
-		    
-            
-			/* Getting Json Object */
-			/* Note that insert into database URL accepts POST method */
-			JSONObject json = jsonParser.makeHttpRequest(url_insert_data, "POST", params);
-			
-			Log.d("DEBUG", "Json Object Created");
-			
-			/* Check CAT Log for response */
-			Log.d("Create Response", json.toString());
-			
-			
-			// check for success tag
-			 try {
-				   Log.d("Debug", "above json.getint()");
-			 	   int success = json.getInt(TAG_SUCCESS);
-			 	  Log.d("Debug", "json.getInt(TAG_SUCCESS)");
-			 	   if(success == 1) 
-			 	   {
-			 		  Log.d("Debug", "inside if success = 1");
-			 		  flag_success = 1;
-				} 
-			 	   else 
-					{
-			 		  Log.d("Debug", "inside else of success = 1");
-			 		  flag_success = 2;
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}  
-
-			
-			/* Finished adding into the database */
-			
-			return null;
-		}
-		
-		
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
-		protected void onPostExecute(String file_url) {
-			pDialog.dismiss();
-			if(flag_success == 1)
-			{
-				Toast.makeText(getApplicationContext(), "The Update has been shouted at all your Stalkers", Toast.LENGTH_LONG).show();
-			}
-			else if(flag_success == 2)
-			{
-				Toast.makeText(getApplicationContext(), "Failed To Update. Shout Again!", Toast.LENGTH_LONG).show();
-			}
-			Intent intent = new Intent(getApplicationContext(), LandingPage.class);
-            startActivity(intent);
-		}
-    	
-    }
     
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1046,6 +956,139 @@ public class ActionShout extends Activity {
 		    return cursor.getString(column_index);
 		}
     */
+	
+private class AddInDatabase extends AsyncTask<String, String, String> {
+    	
+    	/**
+		 * Before starting background thread Show Progress Dialog
+		 * */
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			pDialog = new ProgressDialog(ActionShout.this);
+			pDialog.setMessage("The News update is being shouted !");
+			pDialog.setIndeterminate(false);
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+		
+		/**
+		 * Adding into database
+		 * */
+		protected String doInBackground(String... args) {
+			/* Adding into Database */
+			
+			
+            /* Building Parameters */
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("NewsUpdate", news_update));
+			params.add(new BasicNameValuePair("Anonymous", anony));
+			params.add(new BasicNameValuePair("Latitude", latit));
+			params.add(new BasicNameValuePair("Longitude", longit));
+			params.add(new BasicNameValuePair("GeoLocation", finalAddress));
+			params.add(new BasicNameValuePair("EmailId", email_id));
+			
+			Log.d("DEBUG", "Building NameValuePair");
+			
+			/* Calling Json Object */
+		    JSONParser jsonParser = new JSONParser();
+		    
+            
+			/* Getting Json Object */
+			/* Note that insert into database URL accepts POST method */
+			JSONObject json = jsonParser.makeHttpRequest(url_insert_data, "POST", params);
+			
+			Log.d("DEBUG", "Json Object Created");
+			
+			/* Check CAT Log for response */
+			Log.d("Create Response", json.toString());
+			
+			
+			// check for success tag
+			 try {
+				   Log.d("Debug", "above json.getint()");
+			 	   int success = json.getInt(TAG_SUCCESS);
+			 	   Log.d("Debug", "json.getInt(TAG_SUCCESS)");
+			 	   if(success == 1) 
+			 	   {
+			 		  Log.d("Debug", "inside if success = 1");
+			 		  flag_success = 1;
+				   } 
+			 	   else 
+					{
+			 		  Log.d("Debug", "inside else of success = 1");
+			 		  flag_success = 2;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}  
+
+              if(flag_success == 1)
+              {
+            	  if(largeImage1 != null)
+      			{
+      				try {
+      					ImageUpload.upload(cameraFile1);
+      				} catch (IOException e) {
+      					// TODO Auto-generated catch block
+      					e.printStackTrace();
+      				}
+      			}
+            	  if(largeImage2 != null)
+        			{
+        				try {
+        					ImageUpload.upload(cameraFile2);
+        				} catch (IOException e) {
+        					// TODO Auto-generated catch block
+        					e.printStackTrace();
+        				}
+        			}
+            	  if(largeImage3 != null)
+        			{
+        				try {
+        					ImageUpload.upload(cameraFile3);
+        				} catch (IOException e) {
+        					// TODO Auto-generated catch block
+        					e.printStackTrace();
+        				}
+        			}
+            	  if(largeImage4 != null )
+        			{
+        				try {
+        					ImageUpload.upload(cameraFile4);
+        				} catch (IOException e) {
+        					// TODO Auto-generated catch block
+        					e.printStackTrace();
+        				}
+        			}
+              }
+			 
+			/* Finished adding into the database */
+			
+			return null;
+		}
+		
+		
+		/**
+		 * After completing background task Dismiss the progress dialog
+		 * **/
+		protected void onPostExecute(String file_url) {
+			pDialog.dismiss();
+			if(flag_success == 1)
+			{
+				Toast.makeText(getApplicationContext(), "The Update has been shouted at all your Stalkers", Toast.LENGTH_LONG).show();
+			}
+			else if(flag_success == 2)
+			{
+				Toast.makeText(getApplicationContext(), "Failed To Update. Shout Again!", Toast.LENGTH_LONG).show();
+			}
+			Intent intent = new Intent(getApplicationContext(), LandingPage.class);
+            startActivity(intent);
+		}
+    	
+    }
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
