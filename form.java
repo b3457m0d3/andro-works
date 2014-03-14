@@ -51,6 +51,12 @@ public class ActionShout extends Activity {
 	private String cameraFile3 = null;
 	private String cameraFile4 = null;
 	
+	// Stores the hash value of the name of the image
+	private String cameraFile1Hash = null;
+	private String cameraFile2Hash = null;
+	private String cameraFile3Hash = null;
+	private String cameraFile4Hash = null;
+	
 	private Bitmap largeImage1, largeImage2, largeImage3, largeImage4;
 
 	GPSTracker gps;
@@ -173,20 +179,28 @@ public class ActionShout extends Activity {
             cameraFile1 = destImage1.getAbsolutePath();   
             f1 = new File(destImage1.getAbsolutePath());
             
+            cameraFile1Hash = Md5.generate(cameraFile1);
+            
             /* for second image */
             destImage2 = new File(dir, image2 + ".jpg");
             cameraFile2 = destImage2.getAbsolutePath();   
             f2 = new File(destImage2.getAbsolutePath());
+            
+            cameraFile2Hash = Md5.generate(cameraFile2);
             
             /* for third image */
             destImage3 = new File(dir, image3 + ".jpg");
             cameraFile3 = destImage3.getAbsolutePath();   
             f3 = new File(destImage3.getAbsolutePath());
             
+            cameraFile3Hash = Md5.generate(cameraFile3);
+            
             /* for fourth image */
             destImage4 = new File(dir, image4 + ".jpg");
             cameraFile4 = destImage4.getAbsolutePath();   
             f4 = new File(destImage4.getAbsolutePath());
+            
+            cameraFile4Hash = Md5.generate(cameraFile4);
             
         /* Initializing the various views in the XML file */
 		
@@ -1028,7 +1042,7 @@ private class AddInDatabase extends AsyncTask<String, String, String> {
             	  if(largeImage1 != null)
       			{
       				try {
-      					ImageUpload.upload(cameraFile1);
+      					ImageUpload.upload(cameraFile1Hash);
       				} catch (IOException e) {
       					// TODO Auto-generated catch block
       					e.printStackTrace();
@@ -1037,7 +1051,7 @@ private class AddInDatabase extends AsyncTask<String, String, String> {
             	  if(largeImage2 != null)
         			{
         				try {
-        					ImageUpload.upload(cameraFile2);
+        					ImageUpload.upload(cameraFile2Hash);
         				} catch (IOException e) {
         					// TODO Auto-generated catch block
         					e.printStackTrace();
@@ -1046,7 +1060,7 @@ private class AddInDatabase extends AsyncTask<String, String, String> {
             	  if(largeImage3 != null)
         			{
         				try {
-        					ImageUpload.upload(cameraFile3);
+        					ImageUpload.upload(cameraFile3Hash);
         				} catch (IOException e) {
         					// TODO Auto-generated catch block
         					e.printStackTrace();
@@ -1055,7 +1069,7 @@ private class AddInDatabase extends AsyncTask<String, String, String> {
             	  if(largeImage4 != null )
         			{
         				try {
-        					ImageUpload.upload(cameraFile4);
+        					ImageUpload.upload(cameraFile4Hash);
         				} catch (IOException e) {
         					// TODO Auto-generated catch block
         					e.printStackTrace();
