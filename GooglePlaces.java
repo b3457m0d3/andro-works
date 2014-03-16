@@ -1,4 +1,4 @@
-package com.example.shoutoutloud;
+package com.example.xxxx;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +18,7 @@ public class GooglePlaces {
 	private static final String LOG_TAG = "GooglePlaces";
 
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place/nearbysearch";
-	private static final String RADIUS = "500";
+	private static final String RADIUS = "100";
 	private static final String OUT_JSON = "/json";
 
 	private static final String API_KEY = "AIzaSyAeJrd0zKMhovJu4IRa8wB2hrG1qSq-8F8";
@@ -27,7 +27,7 @@ public class GooglePlaces {
 	private static String PlacesArray [] = null;
 	private static String NewPlacesArray[] = null;
 	
-	private static String [] ReturnPlaces (String Latitude, String Longitude){
+	static String [] ReturnPlaces (String Latitude, String Longitude){
 		
 		HttpURLConnection conn = null;
 	    StringBuilder jsonResults = new StringBuilder();
@@ -79,11 +79,12 @@ public class GooglePlaces {
 	    PlacesArray = new String[PlacesList.size()];
 	    NewPlacesArray = new String[(PlacesList.size()/2)];
 	    PlacesArray = PlacesList.toArray(PlacesArray);
-	    
-	    for(int p=0; p<PlacesList.size(); p=p+2){
-	    	NewPlacesArray[p] = PlacesArray[p]+", "+PlacesArray[p+1];
-	    }
+	   /* 
+	    for(int p=0; p<(PlacesList.size()-1); p=p+2){
+	    	{NewPlacesArray[p] = PlacesArray[p]+"\n\n"+PlacesArray[p+1];
+	    	Log.d(LOG_TAG, NewPlacesArray[p]);}
+	    } */
 
-		return NewPlacesArray;
+		return PlacesArray;
 	}
 }
