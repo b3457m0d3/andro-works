@@ -136,6 +136,7 @@ public class ActionShout extends Activity {
 	/* height and width of the picture to be displayed in ActionShout.this activity */
 	int height = 180; // height in pixels
 	int width = 180; // width in pixels    
+	private AsyncTask<Void, Void, Void> execute;
 
 	
 	@SuppressLint("NewApi")
@@ -234,8 +235,6 @@ public class ActionShout extends Activity {
 			city = gps.getCity();
 			country = gps.getCountry();
 			
-			finalAddress = addressText[0];
-			
 			Log.d("Address | checking if address recieved from GPS tracker class or not", addressText[1]);
 			int size = addressText.length;
 			Log.d("Number of addresses", Integer.toString(size));
@@ -250,8 +249,10 @@ public class ActionShout extends Activity {
 			}
 			
 			// Coverting the List of addresses into into the array of strings
-			addressTextNew = new String[addressTextList.size()];
-			addressTextNew = addressTextList.toArray(addressTextNew);
+			/*addressTextNew = new String[addressTextList.size()];
+			addressTextNew = addressTextList.toArray(addressTextNew); */
+			
+			finalAddress = addressText[0];
 			
 			Log.d("Addresses made", addresses);
 			if(addresses != null)
@@ -267,6 +268,8 @@ public class ActionShout extends Activity {
 		
 		latit = Double.toString(latitude);
 		longit = Double.toString(longitude);
+		
+		new Places().execute();
 		
 	    if(addressTextList.size() > 0)
 	    {
@@ -1102,11 +1105,12 @@ private class AddInDatabase extends AsyncTask<String, String, String> {
     	
     }
 
+private class Places extends AsyncTask<Void, Void, Void>{
+	@Override 
+	protected Void doInBackground(Void ... params) {
+		addressTextNew = GooglePlaces.ReturnPlaces(latit, longit);
+		return null;
+	    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.action_shout, menu);
-		return true;
-	}
+    }
 }
