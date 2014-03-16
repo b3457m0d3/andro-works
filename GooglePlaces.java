@@ -1,4 +1,4 @@
-package com.example.xxxx;
+package com.example.shoutoutloud;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +18,7 @@ public class GooglePlaces {
 	private static final String LOG_TAG = "GooglePlaces";
 
 	private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place/nearbysearch";
-	private static final String RADIUS = "100";
+	private static final String RADIUS = "200";
 	private static final String OUT_JSON = "/json";
 
 	private static final String API_KEY = "AIzaSyAeJrd0zKMhovJu4IRa8wB2hrG1qSq-8F8";
