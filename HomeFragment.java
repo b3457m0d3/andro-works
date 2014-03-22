@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -53,7 +50,7 @@ public class HomeFragment extends ListFragment{
 	private ListView lv;
 	private ListAdapter adapter;
 	
-	private String url_show_data = "xxxxxxxxxxx" + "?start=" + currentPage + "&end=" + jsonAfter;
+	private String url_show_data = "http://www.shoutoutloud.me/android/show_updates.php";
 	
 	    // JSON Node names
 	    private static final String TAG_SUCCESS = "success";
@@ -109,12 +106,13 @@ public class HomeFragment extends ListFragment{
 			@Override
 			public void onClick(View v) {
 				
-                Toast.makeText(getActivity(), currentPage + " - " + jsonAfter + url_show_data, Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(getActivity(), currentPage + " - " + jsonAfter + url_show_data, Toast.LENGTH_SHORT).show();
 
                 new LoadAllUpdates().execute();
                 ((BaseAdapter) adapter).notifyDataSetChanged();
                 
                 lv.smoothScrollByOffset(currentPage);
+                
 			}
 		});
         
@@ -163,12 +161,9 @@ public class HomeFragment extends ListFragment{
 		protected String doInBackground(String... args) {
 			// Building Parameters
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			
-			url_show_data = url_show_data + "?start=" + currentPage + "&end=" + jsonAfter;
-			
-			currentPage = currentPage + 11;
-            jsonAfter = jsonAfter + 10;
-			
+			params.add(new BasicNameValuePair("start", Integer.toString(currentPage)));
+			params.add(new BasicNameValuePair("end", Integer.toString(jsonAfter)));
+			Log.d("URL", url_show_data);
 			// getting JSON string from URL
 			JSONObject json = jsonParser.makeHttpRequest(url_show_data, "GET", params);
 			// Check your log cat for JSON reponse
@@ -237,6 +232,8 @@ public class HomeFragment extends ListFragment{
                          {R.id.GeoLocation,R.id.TimePassed, R.id.NewsUpdate, R.id.TickMarks, R.id.ReShouts});
                     setListAdapter(adapter);
                 
+                    currentPage = currentPage + 11;
+                    jsonAfter = jsonAfter + 10;
 		}
   }
 }
