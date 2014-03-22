@@ -158,7 +158,7 @@ public class HomeFragment extends ListFragment implements OnScrollListener {
 					// looping through All people
 					for (int i = 0; i < details.length(); i++) {
 						JSONObject c = details.getJSONObject(i);
-
+						
 						// Storing each json item in variable
 						user_id = c.getString(TAG_USERID);
 						post_id = c.getString(TAG_POSTID);
