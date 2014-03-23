@@ -80,5 +80,5 @@ public abstract void onLoadMore(int page, int totalItemsCount);
 @Override
 public void onScrollStateChanged(AbsListView view, int scrollState) {
     /* Don't take any action on changed */
-}
+  }
 }
