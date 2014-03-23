@@ -1,4 +1,4 @@
-public abstract class EndlessScrollListener implements OnScrollListener {
+public abstract class EndlessScroll implements OnScrollListener {
 
 /* The minimum amount of items to have below your current scroll position before loading more. */
 private int visibleThreshold = 1;
@@ -15,14 +15,14 @@ private boolean loading = true;
 /* Sets the starting page index */
 private int startingPageIndex = 0;
 
-public EndlessScrollListener() {
+public EndlessScroll() {
 }
 
-public EndlessScrollListener(int visibleThreshold) {
+public EndlessScroll(int visibleThreshold) {
     this.visibleThreshold = visibleThreshold;
 }
 
-public EndlessScrollListener(int visibleThreshold, int startPage) {
+public EndlessScroll(int visibleThreshold, int startPage) {
     this.visibleThreshold = visibleThreshold;
     this.startingPageIndex = startPage;
     this.currentPage = startPage;
