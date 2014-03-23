@@ -1,3 +1,8 @@
+package com.example.shoutoutloud;
+
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+
 public abstract class EndlessScroll implements OnScrollListener {
 
 /* The minimum amount of items to have below your current scroll position before loading more. */
