@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 public class ExifUtil {
 	
+	/* Constant Variables that holds the value for the screen orientation */
 	public static final int ORIENTATION_NORMAL = 1;
 	public static final int ORIENTATION_FLIP_HORIZONTAL = 2;
 	public static final int ORIENTATION_ROTATE_180 = 3;
@@ -75,6 +76,7 @@ public class ExifUtil {
         return bitmap;
     }
     
+    /* Function to get the EXIF orientation of the image */
     private static int getExifOrientation(String src) throws IOException {
         int orientation = 1;
         
