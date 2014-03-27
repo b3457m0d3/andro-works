@@ -16,11 +16,13 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +39,14 @@ import android.widget.Toast;
  
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SuppressLint("NewApi")
-public class HomeFragment extends ListFragment{
+public class HomeFragment extends ListFragment implements OnScrollListener{
 	
+	/* Variables to restore the listView position */
+	private int index;
+	private View v;
+	private int top;
+	
+	/* Variables to manage paging */
 	private int currentPage  = 0;                   //  current page of the data          
 	private int jsonAfter = 10;                      // Page after loading the json data
 	
@@ -48,22 +56,27 @@ public class HomeFragment extends ListFragment{
 	//ArrayAdapter<String> adapter;
 	
 	private ListView lv;
-	private ListAdapter adapter;
+	private NewsAdapter ladapter;
 	
-	private String url_show_data = "http://www.shoutoutloud.me/android/show_updates.php";
+	private String url_show_data = "http://www.xxxx.me/android/show_updates.php";
 	
 	    // JSON Node names
-	    private static final String TAG_SUCCESS = "success";
-	    private static final String TAG_DETAILS = "details";
-		private static final String TAG_USERID = "user_id";
-		private static final String TAG_POSTID = "post_id";
-		private static final String GEO_LOCATION = "geo_location";
-		private static final String TIME_PASSED = "time_passed";
-		private static final String NEWS_UPDATE = "news_update";
-		private static final String TICK_MARKS = "tick_marks";
-		private static final String RE_SHOUTS = "re_shouts";
+	    static final String TAG_SUCCESS = "success";
+	    static final String TAG_DETAILS = "details";
+		static final String TAG_USERID = "user_id";
+		static final String TAG_POSTID = "post_id";
+		static final String GEO_LOCATION = "geo_location";
+		static final String TIME_PASSED = "time_passed";
+		static final String NEWS_UPDATE = "news_update";
+		static final String TICK_MARKS = "tick_marks";
+		static final String RE_SHOUTS = "re_shouts";
+		static final String CITY = "city";
+		static final String COUNTRY = "country";
+		static final String IMAGE1_URL = "image1_url";
+		static final String SPAM_COUNT = "spam_count";
 		
-		String user_id, post_id, geo_location, time_passed, news_update, tick_marks, re_shouts;
+		private String user_id, post_id, geo_location, time_passed, news_update, tick_marks, re_shouts;
+		private String city, country, spam_count, image1_url;
 		
 		private String email = null;
 		
@@ -73,24 +86,17 @@ public class HomeFragment extends ListFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-  
-        View rootView = inflater.inflate(R.layout.home_fragment, container, false);
         
+        View rootView = inflater.inflate(R.layout.home_fragment, container, false);
         ImageView map = (ImageView) rootView.findViewById(R.id.imageView1);
         
         lv = (ListView) rootView.findViewById(android.R.id.list);
-        
-        
-        // Creating a button - Load More
-        Button btnLoadMore = new Button(getActivity());
-        btnLoadMore.setText("Load More");
         
         // Creating a button - Refresh
         Button refresh = new Button(getActivity());
         refresh.setText("Refresh");
       
         // Adding button to listview at footer
-        lv.addFooterView(btnLoadMore);
         lv.addHeaderView(refresh);
         
         refresh.setOnClickListener(new View.OnClickListener() {
@@ -100,22 +106,7 @@ public class HomeFragment extends ListFragment{
 				new LoadAllUpdates().execute();
 			}
 		});
-        
-        btnLoadMore.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				
-              //  Toast.makeText(getActivity(), currentPage + " - " + jsonAfter + url_show_data, Toast.LENGTH_SHORT).show();
-
-                new LoadAllUpdates().execute();
-                ((BaseAdapter) adapter).notifyDataSetChanged();
-                
-                lv.smoothScrollByOffset(currentPage);
-                
-			}
-		});
-        
+       
         map.bringToFront();
         
         email = LandingPage.email_id;
@@ -138,10 +129,35 @@ public class HomeFragment extends ListFragment{
         return rootView;
     }
     
+    
     public void onActivityCreated (Bundle savedInstanceState){
-    	
         // Loading people in Background Thread
 		new LoadAllUpdates().execute();
+		
+		lv.setOnScrollListener(new OnScrollListener() {
+		    @Override
+		    public void onScroll(AbsListView view, int firstVisibleItem, 
+		        int visibleItemCount, int totalItemCount) {
+		        
+		       
+		    }
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+		    	if(listIsAtTop())
+		    		Toast.makeText(getActivity(), "At top", Toast.LENGTH_LONG).show();
+				
+			}
+		});
+		
+		lv.setOnScrollListener(new EndlessScroll(){
+			 @Override
+		        public void onLoadMore(int page, int totalItemsCount) {
+		            // TODO Auto-generated method stub
+		            new LoadAllUpdates().execute();
+		        }
+		});
 		super.onActivityCreated(savedInstanceState);
     }
     
@@ -152,6 +168,11 @@ public class HomeFragment extends ListFragment{
 		 * */
 		@Override
 		protected void onPreExecute() {
+			
+			/* Getting the top value and child value for restoring the listView position */
+			index = lv.getFirstVisiblePosition();
+			v = lv.getChildAt(0);
+			top = (v == null) ? 0 : v.getTop();
 			super.onPreExecute();
 		}
 		
@@ -191,6 +212,10 @@ public class HomeFragment extends ListFragment{
 						news_update = c.getString(NEWS_UPDATE);
 						tick_marks = c.getString(TICK_MARKS);
 						re_shouts = c.getString(RE_SHOUTS);
+						city = c.getString(CITY);
+						country = c.getString(COUNTRY);
+						image1_url = c.getString(IMAGE1_URL);
+						spam_count = c.getString(SPAM_COUNT);
 
 						// creating new HashMap
 						HashMap<String, String> map = new HashMap<String, String>();
@@ -203,6 +228,10 @@ public class HomeFragment extends ListFragment{
 						map.put(NEWS_UPDATE, news_update);
 						map.put(TICK_MARKS, tick_marks);
 						map.put(RE_SHOUTS, re_shouts);
+						map.put(CITY, city);
+						map.put(COUNTRY, country);
+						map.put(IMAGE1_URL, image1_url);
+						map.put(SPAM_COUNT, spam_count);
 
 						// adding HashList to ArrayList
 						newsUpdates.add(map);
@@ -215,25 +244,53 @@ public class HomeFragment extends ListFragment{
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} 
+			
+			
 			return null;
 	}
 		
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
 
 		protected void onPostExecute(String file_url) {
                   //updating list view with the parsed items
-
-                    adapter = new SimpleAdapter(getActivity().getApplicationContext(), newsUpdates,
+                    
+                  /*  adapter = new SimpleAdapter(getActivity().getApplicationContext(), newsUpdates,
                             R.layout.landing_list,
-                            new String[] {GEO_LOCATION, TIME_PASSED, NEWS_UPDATE, TICK_MARKS, RE_SHOUTS}, new int[] 
-
-                         {R.id.GeoLocation,R.id.TimePassed, R.id.NewsUpdate, R.id.TickMarks, R.id.ReShouts});
-                    setListAdapter(adapter);
+                            new String[] {GEO_LOCATION, TIME_PASSED, NEWS_UPDATE, TICK_MARKS, RE_SHOUTS}, 
+                            new int[] {R.id.GeoLocation,R.id.TimePassed, R.id.NewsUpdate, R.id.TickMarks, R.id.ReShouts});
+                     
+                    setListAdapter(adapter); */
+                    
+                    ladapter = new NewsAdapter(getActivity().getApplicationContext(), newsUpdates);
                 
+                    setListAdapter(ladapter);
+                    
+                    (ladapter).notifyDataSetChanged();
+                    
+                    /* Restoring the position of list view */
+                    lv.setSelectionFromTop(index, top);
+                    
+                    /* Changing values of current and json after for pagin */
                     currentPage = currentPage + 11;
                     jsonAfter = jsonAfter + 10;
+                    
 		}
   }
+    
+    private boolean listIsAtTop()   {   
+        if(lv.getChildCount() == 0) return true;
+        return lv.getChildAt(0).getTop() == 0;
+    }
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		// TODO Auto-generated method stub
+		
+	}
 }
